@@ -4,11 +4,13 @@ import reactHooks from 'eslint-plugin-react-hooks'
 import reactRefresh from 'eslint-plugin-react-refresh'
 import tseslint from 'typescript-eslint'
 import { globalIgnores } from 'eslint/config'
+import pluginQuery from '@tanstack/eslint-plugin-query'
 
 import eslintConfigPrettier from 'eslint-config-prettier/flat'
 
 export default tseslint.config([
   globalIgnores(['dist']),
+  ...pluginQuery.configs['flat/recommended'],
   {
     files: ['**/*.{ts,tsx}'],
     extends: [
