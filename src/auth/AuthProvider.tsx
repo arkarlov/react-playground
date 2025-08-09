@@ -1,30 +1,46 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { AuthContext } from "./AuthContext";
+import { loginRequest, logoutRequest, refreshToken } from "./authService";
+import { setAccessToken } from "./authInterceptors";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [token, setToken] = useState<string | null>(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
 
-  useEffect(() => {
-    const storedToken = localStorage.getItem("accessToken");
-    if (storedToken) {
-      setToken(storedToken);
+  const initAuth = useCallback(async () => {
+    try {
+      const newToken = await refreshToken();
+      setIsAuthenticated(true);
+      setAccessToken(newToken);
+    } catch (error) {
+      console.error("InitAuth error:", error);
+      setIsAuthenticated(false);
+      setAccessToken(null);
+    } finally {
+      setAuthLoading(false);
     }
   }, []);
 
-  const login = (newToken: string) => {
-    localStorage.setItem("accessToken", newToken);
-    setToken(newToken);
-  };
+  const login = useCallback(async (email: string, password: string) => {
+    const token = await loginRequest(email, password);
+    setIsAuthenticated(true);
+    setAccessToken(token);
+  }, []);
 
-  const logout = () => {
-    localStorage.removeItem("accessToken");
-    setToken(null);
-  };
+  const logout = useCallback(async () => {
+    await logoutRequest();
+    setIsAuthenticated(false);
+    setAccessToken(null);
+  }, []);
 
-  const isAuthenticated = !!token;
+  useEffect(() => {
+    initAuth();
+  }, [initAuth]);
 
   return (
-    <AuthContext.Provider value={{ token, login, logout, isAuthenticated }}>
+    <AuthContext.Provider
+      value={{ isAuthenticated, authLoading, login, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );

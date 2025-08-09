@@ -1,28 +1,27 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { loginRequest } from "../auth/authService";
+
 import { useAuth } from "../auth/AuthContext";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("test@example.com");
-  const [password, setPassword] = useState("123456");
+  const [password, setPassword] = useState("test@example.com");
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const token = await loginRequest(email, password);
-      login(token);
+      await login(email, password);
       navigate("/");
     } catch {
-      alert("Ошибка входа");
+      alert("Login error");
     }
   };
 
   return (
     <form onSubmit={handleLogin}>
-      <h2>Вход</h2>
+      <h2>Log In</h2>
       <input
         value={email}
         onChange={(e) => setEmail(e.target.value)}
@@ -32,9 +31,9 @@ const LoginPage = () => {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         type="password"
-        placeholder="Пароль"
+        placeholder="Password"
       />
-      <button type="submit">Войти</button>
+      <button type="submit">Log In</button>
     </form>
   );
 };
