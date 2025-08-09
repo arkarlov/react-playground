@@ -1,22 +1,29 @@
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 import authRoutes from "./routes/auth";
+import cookieParser from "cookie-parser";
 
 import { authMiddleware } from "./middleware/authMiddleware";
-
-dotenv.config();
+import { RequestWithUser } from "./types/express";
 
 const app = express();
 
-app.use(cors());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true, // allow cookies
+  })
+);
 app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 
 app.get("/api/protected", authMiddleware, (req, res) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  res.json({ message: "Секретные данные", user: (req as any).user });
+  res.json({
+    message: "Protected data",
+    user: (req as RequestWithUser).user,
+  });
 });
 
 const PORT = process.env.PORT || 3000;

@@ -15,18 +15,18 @@ function Nav() {
 
   const navList = useMemo(
     () => [
-      { isDisplayed: true, component: <NavLink to="/">Главная</NavLink> },
+      { isDisplayed: true, component: <NavLink to="/">Home</NavLink> },
       {
         isDisplayed: isAuthenticated,
-        component: <NavLink to="/dashboard">Кабинет</NavLink>,
+        component: <NavLink to="/dashboard">Protected</NavLink>,
       },
       {
         isDisplayed: isAuthenticated,
-        component: <button onClick={logout}>Выйти</button>,
+        component: <button onClick={logout}>Log Out</button>,
       },
       {
         isDisplayed: !isAuthenticated,
-        component: <NavLink to="/login">Вход</NavLink>,
+        component: <NavLink to="/login">Log In</NavLink>,
       },
     ],
     [isAuthenticated, logout]
